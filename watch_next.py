@@ -15,6 +15,7 @@ class Movie:
 
 movies = []
 
+
 # read all the movie data from file and insert into a list
 def read_movies_data():
     file = open("movies.txt", "r")
@@ -27,45 +28,29 @@ def read_movies_data():
 
 
 # give a recommendation on the most similar movie to the one watched by the user
-def recommendation(title_watched):
-    title_recommended = ""
+def recommendation(description):
+    movie_recommended = ""
     highest_score = 0
 
-    watched_movie = get_movie(title_watched)
-    nlp_watched = nlp(watched_movie.description)
+    nlp_watched = nlp(description)
 
     for movie in movies:
-        # don't compare with same movie
-        if movie.title != title_watched:
-            nlp_movie = nlp(movie.description)
-            score = nlp_watched.similarity(nlp_movie)
+        nlp_movie = nlp(movie.description)
+        score = nlp_watched.similarity(nlp_movie)
 
-            # compare the similarity in watched movie and this movie
-            # store movie title and score if it is higher than last most similar movie
-            if score > highest_score:
-                highest_score = score
-                title_recommended = movie.title
+        # compare the similarity in watched movie and this movie
+        # store movie and score if it is higher than last most similar movie
+        if score > highest_score:
+            highest_score = score
+            movie_recommended = movie
 
-    return title_recommended
+    return movie_recommended
 
-# return the movie object for the title
-def get_movie(title):
-    for movie in movies:
-        if movie.title == title:
-            return movie
 
 # print out all the movies in the list
 def display_movies():
     for movie in movies:
         print(movie)
-
-# return true if the movie title is in our list of movies otherwise return false
-def movie_valid(title):
-    for movie in movies:
-        if movie.title == title:
-            return True
-
-    return False
 
 
 # ==========Main Menu=============
@@ -82,13 +67,10 @@ while True:
         read_movies_data()
 
     elif menu == "r":
-        movie_watched = input("What is the movie title of the movie you watched?")
+        movie_watched = input("What is the description of the movie you watched?")
 
-        # we only want to find a recommendation for a movie in our list
-        if movie_valid(movie_watched):
-            print(f"You should watch: {recommendation(movie_watched)}\n")
-        else:
-            print("ERROR: Movie title not found in list\n")
+        print(f"You should watch:\n"
+              f"{recommendation(movie_watched)}\n")
 
     elif menu == "dp":
         display_movies()
